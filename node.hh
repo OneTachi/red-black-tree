@@ -34,10 +34,10 @@ private:
 };
 
 template<typename T>
-class Nil : public Node
+class Nil : public Node<T>
 {
-  Nil(Node* parent) { setParent(parent); setColor(false); }
-}
+  Nil(Node<T>* parent) { Node<T>::setParent(parent); Node<T>::setColor(false); }
+};
 
 
 #endif
