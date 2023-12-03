@@ -19,11 +19,14 @@ public:
     //Functions
     Node<T> getRoot(){ return root;}
     Node<T> getUncle(Node<T> nibling);
+    void rotateLeft(Node<T>*);
+    void rotateRight(Node<T>*);
     void fixColor(Node<T> *node);
     void insert(T value);
     Node<T> insert(T value, Node<T> *node);
     void remove(T value);
     void remove(T value, Node<T> node);
+
 
     void find(T value);
 
@@ -31,6 +34,22 @@ private:
     Node<T> *root;
 
 };
+
+template<typename T>
+void RBTree<T>::rotateLeft(Node<T> *node) {
+    Node<T> rightChild = node->getRightChild();
+    Node<T> temp = rightChild.getLeftChild();
+    rightChild->setLeftChild(node);
+    node->setRightChild(temp);
+}
+
+template<typename T>
+void RBTree<T>::rotateRight(Node<T> *node ) {
+    Node<T> leftChild = node->getLeftChild();
+    Node<T> temp = leftChild.getRightChild();
+    leftChild->setRightChild(node);
+    node->setLeftChild(temp);
+}
 
 template<typename T>
 Node<T> RBTree<T>::getUncle(Node<T> nibling) {
@@ -60,7 +79,13 @@ void RBTree<T>::fixColor(Node<T> *node) {
         currParent->setColor(false);
         currParent->getParent()->setColor(true);
     } else {
+        //if uncle is on the right
+        if(uncle == currParent.getParent()->getRightChild()){
+            //triangle case
+            if(node == currParent.getRightChild()){
 
+            }
+        }
     }
 }
 
