@@ -24,7 +24,7 @@ public:
   void setRightChild(Node *child) { rightChild = child; };
   void setParent(Node *node) { parent = node; };
 
-  boolean getColor() { return red; }
+  bool getColor() { return red; }
   void setColor(bool is_red) { red = is_red; };
 
   // Check if Node is Nil

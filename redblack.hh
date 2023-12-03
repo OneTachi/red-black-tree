@@ -18,6 +18,7 @@ public:
 
     //Functions
     Node<T> getRoot(){ return root;}
+    Node<T> getUncle(Node<T> nibling);
     void fixColor(Node<T> *node);
     void insert(T value);
     void insert(T value, Node<T> *node);
@@ -31,16 +32,23 @@ private:
 
 };
 
+template<typename T>
+Node<T> RBTree<T>::getUncle(Node<T> nibling) {
+    Node<T> nibParent = nibling.getParent();
+    if(nibParent == NULL){
+        return NULL;
+    }
+    if(nibParent == )
+}
+
 //TODO: finish fixColor, write delete and print
 template<typename T>
 void RBTree<T>::fixColor(Node<T> *node) {
     if(node == root){
         node->setColor(false);
         return;
-    } else {
-        //...
     }
-
+    if()
 }
 
 template<typename T>
