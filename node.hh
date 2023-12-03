@@ -33,5 +33,11 @@ private:
   Node *rightChild = NULL;
 };
 
+template<typename T>
+class Nil : public Node
+{
+  Nil(Node* parent) { setParent(parent); setColor(false); }
+}
+
 
 #endif
