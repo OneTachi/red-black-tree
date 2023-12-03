@@ -10,6 +10,7 @@ class Node
 public:
   // Constructors -- All assume Node will be Red. All Pointers will be assigned to NUlL unless specified
   Node(){};
+  Node(T value){this->value = value;}
   Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
   Node(Node *parent, T value = NULL) { parent = parent; value = value; }
 
@@ -18,12 +19,17 @@ public:
   Node *getRightChild() { return rightChild; };
   Node *getParent() { return parent; };
 
+  bool getRed() { return red; };
+
   // Set corresponding pointers
   void setLeftChild(Node *child) { leftChild = child; };
   void setRightChild(Node *child) { rightChild = child; };
   void setParent(Node *node) { parent = node; };
 
   void setColor(bool is_red) { red = is_red; };
+
+  // Check if Node is Nil
+  bool isNil(){return false;};
   
 private:
   bool red = true;
@@ -37,6 +43,8 @@ template<typename T>
 class Nil : public Node<T>
 {
   Nil(Node<T>* parent) { Node<T>::setParent(parent); Node<T>::setColor(false); }
+
+  bool isNil(){return true;};
 };
 
 
