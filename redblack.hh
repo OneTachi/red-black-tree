@@ -37,18 +37,33 @@ private:
 
 template<typename T>
 void RBTree<T>::rotateLeft(Node<T> *node) {
-    Node<T> rightChild = node->getRightChild();
-    Node<T> temp = rightChild.getLeftChild();
-    rightChild->setLeftChild(node);
-    node->setRightChild(temp);
+    Node<T> *rightChild = node->getRightChild();
+    if(!rightChild->isNil()) {
+        node->setParent(rightChild);
+        rightChild->setParent(NULL);
+
+        Node<T> *temp = rightChild->getLeftChild();
+        rightChild->setLeftChild(node);
+        temp->setParent(node);
+        node->setRightChild(temp);
+    }
 }
 
 template<typename T>
 void RBTree<T>::rotateRight(Node<T> *node ) {
-    Node<T> leftChild = node->getLeftChild();
-    Node<T> temp = leftChild.getRightChild();
-    leftChild->setRightChild(node);
-    node->setLeftChild(temp);
+    //check if left exists
+    Node<T> *leftChild = node->getLeftChild();
+    if(!leftChild->isNil()) {
+        //leftChild parent = node parent
+        node->setParent(leftChild);
+        leftChild->setParent(NULL);
+        //node parent = leftchild
+        //leftchild rightchild is = to parent left
+        Node<T> *temp = leftChild->getRightChild();
+        leftChild->setRightChild(node);
+        temp->setParent(node);
+        node->setLeftChild(temp);
+    }
 }
 
 template<typename T>
@@ -71,6 +86,8 @@ void RBTree<T>::fixColor(Node<T> *node) {
     if(node == root){
         node->setColor(false);
         return;
+    } else if(!node->getParent()->getColor()){
+        return;
     }
     Node<T> uncle = getUncle(node);
     Node<T> currParent = node->getParent();
@@ -78,12 +95,31 @@ void RBTree<T>::fixColor(Node<T> *node) {
         uncle->setColor(false);
         currParent->setColor(false);
         currParent->getParent()->setColor(true);
+        fixColor(currParent.getParent());
     } else {
         //if uncle is on the right
         if(uncle == currParent.getParent()->getRightChild()){
             //triangle case
             if(node == currParent.getRightChild()){
+                rotateLeft(currParent);
+                fixColor(currParent);
+            //line case
+            } else {
+                currParent.setColor(false);
+                currParent.getParent()->setColor(true);
+                rotateRight(currParent.getParent());
+            }
+        //uncle on left
+        } else {
+            //triangle
+            if(node == currParent.getLeftChild()){
+                rotateRight(currParent);
+                fixColor(currParent);
 
+            } else {
+                currParent.setColor(false);
+                currParent.getParent()->setColor(true);
+                rotateLeft(currParent.getParent());
             }
         }
     }
