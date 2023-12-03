@@ -10,9 +10,9 @@ class Node
 public:
   // Constructors -- All assume Node will be Red. All Pointers will be assigned to NUlL unless specified
   Node(){};
-  Node(T value){this->value = value;}
+  Node(T value){this->value = value; rightChild = Nil<T>(this); leftChild = Nil<T>(this);}
   Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
-  Node(Node *parent, T value = NULL) { parent = parent; value = value; }
+  Node(Node *parent, T value = NULL) { parent = parent; value = value; rightChild = Nil<T>(this); leftChild = Nil<T>(this);}
 
   // Returns corresponding pointer to node
   Node *getLeftChild() { return leftChild; } ;

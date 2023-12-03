@@ -21,7 +21,7 @@ public:
     Node<T> getUncle(Node<T> nibling);
     void fixColor(Node<T> *node);
     void insert(T value);
-    void insert(T value, Node<T> *node);
+    Node<T> insert(T value, Node<T> *node);
     void remove(T value);
     void remove(T value, Node<T> node);
 
@@ -34,11 +34,16 @@ private:
 
 template<typename T>
 Node<T> RBTree<T>::getUncle(Node<T> nibling) {
-    Node<T> nibParent = nibling.getParent();
+    Node<T> nibParent = nibling->getParent();
     if(nibParent == NULL){
         return NULL;
     }
-    if(nibParent == )
+    Node<T> grandparent = nibParent->getParent();
+    if(nibParent == grandparent.getLeftChild()){
+        return grandparent->getRightChild();
+    } else {
+        return grandparent->getLeftChild();
+    }
 }
 
 //TODO: finish fixColor, write delete and print
@@ -48,7 +53,15 @@ void RBTree<T>::fixColor(Node<T> *node) {
         node->setColor(false);
         return;
     }
-    if()
+    Node<T> uncle = getUncle(node);
+    Node<T> currParent = node->getParent();
+    if(uncle->getColor()){
+        uncle->setColor(false);
+        currParent->setColor(false);
+        currParent->getParent()->setColor(true);
+    } else {
+
+    }
 }
 
 template<typename T>
@@ -57,20 +70,25 @@ void RBTree<T>::insert(T value){
         root = new Node<T>(value);
         root->setColor(false);
     }
-    else
-        insert(value, root);
+    else {
+        fixColor(insert(value, root));
+    }
 }
 
 template<typename T>
-void RBTree<T>::insert(T value, Node<T> *node){
+Node<T> RBTree<T>::insert(T value, Node<T> *node){
     if(value < node->value){
-        if(node->getLeftChild()->isNil())
-            getRoot().setLeftChild(new Node<T>(value));
+        if(node->getLeftChild()->isNil()) {
+            node->setLeftChild(new Node<T>(value));
+            return node->getLeftChild();
+        }
         else
             insert(value, node->getLeftChild());
     } else {
-        if(node->getRightChild()->isNil())
-            getRoot().setRightChild(new Node<T>(value));
+        if(node->getRightChild()->isNil()) {
+            node->setRightChild(new Node<T>(value));
+            return node->getRightChild();
+        }
         else
             insert(value, node->getRightChild());
     }
