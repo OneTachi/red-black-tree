@@ -1,10 +1,14 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <fstream>
+#include <vector>
+
 #include "redblack.hh"
 #include "node.hh"
 
 using namespace std;
+
 int main(int argc, char** argv)
 {
   if (argc < 3)
@@ -15,7 +19,7 @@ int main(int argc, char** argv)
 
   string file(argv[2]);
 
-  RBTree tree();
+  RBTree<string> tree;
 
   istringstream file_stream(file);
   do
@@ -54,6 +58,9 @@ int main(int argc, char** argv)
 	    case 'i':
 	      if (wordVec.size() == 2)
 		tree.insert(wordVec[1]);
+	      break;
+	    case 'p':
+	      tree.preOrderPrint();
 	    }
 	}
  

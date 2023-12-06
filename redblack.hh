@@ -11,27 +11,39 @@ using namespace std;
 template<typename T>
 class RBTree{
 public:
-    //Constructors
-    RBTree(){root = NULL;}
-    RBTree(T value){this->root = Node<T>(value);}
-    RBTree(Node<T>* node){this->root = node;}
+  //Constructors
+  RBTree(){root = NULL;}
+  RBTree(T value){this->root = Node<T>(value);}
+  RBTree(Node<T>* node){this->root = node;}
 
-    //Functions
-    Node<T> getRoot(){ return root;}
-    Node<T> getUncle(Node<T> nibling);
-    void rotateLeft(Node<T>*);
-    void rotateRight(Node<T>*);
-    void fixColor(Node<T> *node);
-    void insert(T value);
-    Node<T> insert(T value, Node<T> *node);
-    void remove(T value);
-    void remove(T value, Node<T> node);
+  //Functions
+  Node<T> *getRoot(){ return root;}
+  Node<T> *getUncle(Node<T> nibling);
+  
+  void rotateLeft(Node<T>*);
+  void rotateRight(Node<T>*);
+  
+  void fixColor(Node<T> *node);
+  
+  void insert(T value);
+  Node<T> *insert(T value, Node<T> *node);
+  
+  //void remove(T value);
+  //void remove(T value, Node<T> node);
+  void remove(Node<T> *);
 
 
-    void find(T value);
+  // void find(T value);
+  void preOrderPrint();
+  Node<T>* findMin(Node<T>*);
+  void deleteFixup(Node<T>*, Node<T>*);
+  void transplant(Node<T>*, Node<T>*);
+  
+  
 
 private:
-    Node<T> *root;
+  void preOrderPrint(Node<T> *);
+  Node<T> *root;
 
 };
 
@@ -67,12 +79,12 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
 }
 
 template<typename T>
-Node<T> RBTree<T>::getUncle(Node<T> nibling) {
-    Node<T> nibParent = nibling->getParent();
-    if(nibParent == NULL){
+Node<T>* RBTree<T>::getUncle(Node<T>* nibling) {
+    Node<T> *nibParent = nibling->getParent();
+    if(nibParent == NULL) {
         return NULL;
     }
-    Node<T> grandparent = nibParent->getParent();
+    Node<T> *grandparent = nibParent->getParent();
     if(nibParent == grandparent.getLeftChild()){
         return grandparent->getRightChild();
     } else {
@@ -89,37 +101,37 @@ void RBTree<T>::fixColor(Node<T> *node) {
     } else if(!node->getParent()->getColor()){
         return;
     }
-    Node<T> uncle = getUncle(node);
-    Node<T> currParent = node->getParent();
+    Node<T> *uncle = getUncle(node);
+    Node<T> *currParent = node->getParent();
     if(uncle->getColor()){
         uncle->setColor(false);
         currParent->setColor(false);
         currParent->getParent()->setColor(true);
-        fixColor(currParent.getParent());
+        fixColor(currParent->getParent());
     } else {
         //if uncle is on the right
-        if(uncle == currParent.getParent()->getRightChild()){
+        if(uncle == currParent->getParent()->getRightChild()){
             //triangle case
-            if(node == currParent.getRightChild()){
+            if(node == currParent->getRightChild()){
                 rotateLeft(currParent);
                 fixColor(currParent);
             //line case
             } else {
-                currParent.setColor(false);
-                currParent.getParent()->setColor(true);
-                rotateRight(currParent.getParent());
+                currParent->setColor(false);
+                currParent->getParent()->setColor(true);
+                rotateRight(currParent->getParent());
             }
         //uncle on left
         } else {
             //triangle
-            if(node == currParent.getLeftChild()){
+            if(node == currParent->getLeftChild()){
                 rotateRight(currParent);
                 fixColor(currParent);
 
             } else {
-                currParent.setColor(false);
-                currParent.getParent()->setColor(true);
-                rotateLeft(currParent.getParent());
+                currParent->setColor(false);
+                currParent->getParent()->setColor(true);
+                rotateLeft(currParent->getParent());
             }
         }
     }
@@ -137,36 +149,41 @@ void RBTree<T>::insert(T value){
 }
 
 template<typename T>
-Node<T> RBTree<T>::insert(T value, Node<T> *node){
-    if(value < node->value){
-        if(node->getLeftChild()->isNil()) {
-            node->setLeftChild(new Node<T>(value));
-            return node->getLeftChild();
-        }
-        else
-            insert(value, node->getLeftChild());
-    } else {
-        if(node->getRightChild()->isNil()) {
-            node->setRightChild(new Node<T>(value));
-            return node->getRightChild();
-        }
-        else
-            insert(value, node->getRightChild());
+Node<T>* RBTree<T>::insert(T value, Node<T> *node){
+  if(value < node->getValue()){
+    if(node->getLeftChild()->isNil()) {
+      node->setLeftChild(new Node<T>(value));
+      return node->getLeftChild();
     }
+    else
+      insert(value, node->getLeftChild());
+  } else {
+    if(node->getRightChild()->isNil()) {
+      node->setRightChild(new Node<T>(value));
+      return node->getRightChild();
+    }
+    else
+      insert(value, node->getRightChild());
+  }
 }
 
+template<typename T>
+void RBTree<T>::preOrderPrint()
+{
+  preOrderPrint(root);
+}
 
 template<typename T>
 void RBTree<T>::preOrderPrint(Node<T> *node)
 {
-  cout << getValue() << endl;
-  if (!getLeftChild()->isNil())
+  cout << node->getValue() << endl;
+  if (!node->getLeftChild()->isNil())
     {
-      preOrderPrint(getLeftChild());
+      preOrderPrint(node->getLeftChild());
     }
-  if (!getRightChild()->isNil())
+  if (!node->getRightChild()->isNil())
     {
-      preOrderPrint(getRightChild());
+      preOrderPrint(node->getRightChild());
     }
 }
 
@@ -189,7 +206,7 @@ void RBTree<T>::transplant(Node<T> *removed, Node<T> *successor)
 }
 
 template<typename T>
-void RBTree::remove(Node<T> *removal)
+void RBTree<T>::remove(Node<T> *removal)
 {
   // Insert case of removal node not existing
   if (!(removal->getLeftChild()->isNil() || removal->getRightChild()->isNil()))
@@ -219,7 +236,7 @@ void RBTree::remove(Node<T> *removal)
 }
 
 template<typename T>
-void RBTree::deleteFixup(Node<T> *fix, Node<T> *sibling)
+void RBTree<T>::deleteFixup(Node<T> *fix, Node<T> *sibling)
 {
   while (fix->getColor() == false && fix != root)
     {
@@ -260,7 +277,7 @@ void RBTree::deleteFixup(Node<T> *fix, Node<T> *sibling)
 
 
 template<typename T>
-Node* RBTree::findMin(Node<T> *node)
+Node<T>* RBTree<T>::findMin(Node<T> *node)
 {
   if (node->getLeftChild->isNil()) { return node; }
   return findMin(node->getLeftChild());

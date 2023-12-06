@@ -41,7 +41,6 @@ private:
   Node *rightChild = NULL;
 };
 
-
 template<typename T>
 class Nil : public Node<T>
 {
@@ -49,4 +48,6 @@ class Nil : public Node<T>
 
   bool isNil(){return true;};
 };
+
+
 #endif
