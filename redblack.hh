@@ -6,6 +6,13 @@
 #define REDBLACK_HH
 #include "node.hh"
 
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <fstream>
+#include <vector>
+#include <stddef.h>
+
 using namespace std;
 
 template<typename T>
@@ -25,8 +32,8 @@ public:
   
   void fixColor(Node<T> *node);
   
-  void insert(T value);
-  Node<T> *insert(T value, Node<T> *node);
+  void insert(const T &value);
+  Node<T> *insert(const T &value, Node<T> *node);
   
   //void remove(T value);
   //void remove(T value, Node<T> node);
@@ -138,18 +145,19 @@ void RBTree<T>::fixColor(Node<T> *node) {
 }
 
 template<typename T>
-void RBTree<T>::insert(T value){
+void RBTree<T>::insert(const T &value){
     if(root == NULL) {
-        root = new Node<T>(value);
-        root->setColor(false);
+      root = new Node<T>(value);
+      root->setColor(false);
     }
     else {
-        fixColor(insert(value, root));
+      //fixColor(insert(value, root));
     }
+  
 }
 
 template<typename T>
-Node<T>* RBTree<T>::insert(T value, Node<T> *node){
+Node<T>* RBTree<T>::insert(const T &value, Node<T> *node){
   if(value < node->getValue())
     {
       if(node->getLeftChild()->isNil()) {
@@ -170,14 +178,14 @@ Node<T>* RBTree<T>::insert(T value, Node<T> *node){
 
 template<typename T>
 void RBTree<T>::preOrderPrint()
-{
+{ 
   preOrderPrint(root);
 }
 
 template<typename T>
 void RBTree<T>::preOrderPrint(Node<T> *node)
 {
-  cout << node->getValue() << endl;
+  // cout << node->getValue() << " " << node->getColor() << endl;
   if (!node->getLeftChild()->isNil())
     {
       preOrderPrint(node->getLeftChild());
