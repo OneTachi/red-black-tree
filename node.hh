@@ -9,8 +9,9 @@ class Node
 {
 public:
   // Constructors -- All assume Node will be Red. All Pointers will be assigned to NUlL unless specified
-  Node(){};
-  Node(T value){this->value = value; rightChild = Nil<T>(this); leftChild = Nil<T>(this);}
+  Node(){this->nil = true;};
+  Node(Node<T> *mom){this->nil = true; this->parent = mom;}
+  Node(T value){this->value = value; rightChild = Node<T>(this); leftChild = Node<T>(this);}
   Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
   Node(Node *parent, T value = NULL) { parent = parent; value = value; rightChild = Nil<T>(this); leftChild = Nil<T>(this);}
 
@@ -29,10 +30,11 @@ public:
   void setColor(bool is_red) { red = is_red; };
 
   // Check if Node is Nil
-  bool isNil(){return false;};
+  bool isNil(){return nil;};
   
 private:
   bool red = true;
+  bool nil = false;
   T value = NULL;
   Node *parent = NULL;
   Node *leftChild = NULL;
