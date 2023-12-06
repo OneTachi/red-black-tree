@@ -1,4 +1,4 @@
-BINARIES=hashcheck
+BINARIES=RBtree
 
 all:	${BINARIES}
 

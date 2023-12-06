@@ -18,7 +18,7 @@ public:
 
   //Functions
   Node<T> *getRoot(){ return root;}
-  Node<T> *getUncle(Node<T> nibling);
+  Node<T> *getUncle(Node<T> *nibling);
   
   void rotateLeft(Node<T>*);
   void rotateRight(Node<T>*);
@@ -85,7 +85,7 @@ Node<T>* RBTree<T>::getUncle(Node<T>* nibling) {
         return NULL;
     }
     Node<T> *grandparent = nibParent->getParent();
-    if(nibParent == grandparent.getLeftChild()){
+    if(nibParent == grandparent->getLeftChild()){
         return grandparent->getRightChild();
     } else {
         return grandparent->getLeftChild();
@@ -150,20 +150,21 @@ void RBTree<T>::insert(T value){
 
 template<typename T>
 Node<T>* RBTree<T>::insert(T value, Node<T> *node){
-  if(value < node->getValue()){
-    if(node->getLeftChild()->isNil()) {
-      node->setLeftChild(new Node<T>(value));
-      return node->getLeftChild();
-    }
-    else
-      insert(value, node->getLeftChild());
-  } else {
+  if(value < node->getValue())
+    {
+      if(node->getLeftChild()->isNil()) {
+	node->setLeftChild(new Node<T>(value));
+	return node->getLeftChild();
+      }
+      else
+	return insert(value, node->getLeftChild());
+    } else {
     if(node->getRightChild()->isNil()) {
       node->setRightChild(new Node<T>(value));
       return node->getRightChild();
     }
     else
-      insert(value, node->getRightChild());
+      return insert(value, node->getRightChild());
   }
 }
 

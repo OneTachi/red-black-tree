@@ -11,9 +11,9 @@ public:
   // Constructors -- All assume Node will be Red. All Pointers will be assigned to NUlL unless specified
   Node(){this->nil = true;};
   Node(Node<T> *mom){this->nil = true; this->parent = mom;}
-  Node(T value){this->value = value; rightChild = Node<T>(this); leftChild = Node<T>(this);}
+  Node(T value){this->value = value; rightChild = new Node<T>(); leftChild = new Node<T>(this);}
   Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
-  Node(Node *parent, T value = NULL) { parent = parent; value = value; rightChild = Node<T>(this); leftChild = Node<T>(this);}
+  Node(Node *parent, T value) { parent = parent; value = value; rightChild = new Node<T>(this); leftChild = new Node<T>(this);}
 
   // Returns corresponding pointer to node
   Node *getLeftChild() { return leftChild; } ;
