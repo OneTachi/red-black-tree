@@ -19,7 +19,7 @@ public:
   Node *getLeftChild() { return leftChild; } ;
   Node *getRightChild() { return rightChild; };
   Node *getParent() { return parent; };
-
+  T getValue(){return value;}
 
   // Set corresponding pointers
   void setLeftChild(Node *child) { leftChild = child; };
