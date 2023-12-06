@@ -155,4 +155,115 @@ Node<T> RBTree<T>::insert(T value, Node<T> *node){
     }
 }
 
+
+template<typename T>
+void RBTree<T>::preOrderPrint(Node<T> *node)
+{
+  cout << getValue() << endl;
+  if (!getLeftChild()->isNil())
+    {
+      preOrderPrint(getLeftChild());
+    }
+  if (!getRightChild()->isNil())
+    {
+      preOrderPrint(getRightChild());
+    }
+}
+
+template<typename T>
+void RBTree<T>::transplant(Node<T> *removed, Node<T> *successor)
+{
+  if (removed->getParent() == NULL)
+    {
+      root = successor;
+    }
+  else if (removed->getParent()->getLeftChild == removed)
+    {
+      removed->getParent()->setLeftChild(successor); // Set removed's parent's left child to successor
+    }
+  else
+    {
+      removed->getParent()->setRightChild(successor); // Set removed's parent's left child to successor
+    }
+  successor->setParent(removed->getParent()); // Set Successors parent as the removed node's parent
+}
+
+template<typename T>
+void RBTree::remove(Node<T> *removal)
+{
+  // Insert case of removal node not existing
+  if (!(removal->getLeftChild()->isNil() || removal->getRightChild()->isNil()))
+    {
+      Node<T> *minimum = findMin(removal);
+      Node<T> *minRight = minimum->getRightChild();
+      transplant(minimum, minRight);
+
+      Node<T> *nextBig = removal->getRightChild();
+      minimum->setRightChild(nextBig);
+      nextBig->setParent(minimum);
+
+      transplant(removal, minimum);
+      //delete fixup(minRight) if Black I THINK ALL
+    }
+  else if (removal->getLeftChild()->isNil()) // Right Child exists OR if both children are Nil
+    {
+      transplant(removal, removal->getRightChild());
+      //delete fixup
+    }
+  else 
+    {
+      transplant(removal, removal->getLeftChild());
+      //delete fixup
+    }
+  delete removal;
+}
+
+template<typename T>
+void RBTree::deleteFixup(Node<T> *fix, Node<T> *sibling)
+{
+  while (fix->getColor() == false && fix != root)
+    {
+      if (sibling->getColor == true)
+	{
+	  sibling->setColor(false); // set sibling black
+	  fix->getParent()->setColor(true); // set parent red
+	  //rotate parent left
+	  sibling = fix->getParent()->getRight();
+	}
+
+      if (sibling->getLeftChild()->getColor() == false && sibling->getRightChild()->getColor() == false)
+	{
+	  sibling->setColor(true);
+	  fix = fix->getParent();
+	}
+
+      if (sibling->getLeftChild()->getColor() == true && sibling->getRightChild()->getColor() == false && sibling->getColor() == false) //Sibling & sibling right are black while left is red
+	{
+	  sibling->getLeftChild()->setColor(false);
+	  sibling->setColor(true);
+	  //right rotation on sibling
+	  sibling = fix->getParent()->getRight();
+	}
+
+      if (sibling->getColor() == false && sibling->getRightChild()->getColor() == true)
+	{
+	  bool newColor = fix->getParent()->getColor();
+	  sibling->setColor(newColor);
+	  fix->getParent()->setColor(false);
+	  sibling->getRightChild()->setColor(false);
+	  //left rotation on fix parent
+	  fix = root;
+	}
+      fix->setColor(false);
+    }
+}
+
+
+template<typename T>
+Node* RBTree::findMin(Node<T> *node)
+{
+  if (node->getLeftChild->isNil()) { return node; }
+  return findMin(node->getLeftChild());
+}
+
 #endif //REDBLACK_HH
