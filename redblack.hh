@@ -102,12 +102,14 @@ Node<T>* RBTree<T>::getUncle(Node<T>* nibling) {
 //TODO: finish fixColor, write delete and print
 template<typename T>
 void RBTree<T>::fixColor(Node<T> *node) {
+  cout << "ack" << endl;
     if(node == root){
         node->setColor(false);
         return;
     } else if(!node->getParent()->getColor()){
         return;
     }
+    cout << "ack" << endl;
     Node<T> *uncle = getUncle(node);
     Node<T> *currParent = node->getParent();
     if(uncle->getColor()){
@@ -151,7 +153,7 @@ void RBTree<T>::insert(const T &value){
       root->setColor(false);
     }
     else {
-      //fixColor(insert(value, root));
+      fixColor(insert(value, root));
     }
   
 }
@@ -162,17 +164,25 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node){
     {
       if(node->getLeftChild()->isNil()) {
 	node->setLeftChild(new Node<T>(value));
+	cout << "ack" << endl;
 	return node->getLeftChild();
       }
       else
-	return insert(value, node->getLeftChild());
-    } else {
-    if(node->getRightChild()->isNil()) {
-      node->setRightChild(new Node<T>(value));
-      return node->getRightChild();
+	{
+	  cout << "ack" << endl;
+	  return insert(value, node->getLeftChild());
+	}
     }
-    else
-      return insert(value, node->getRightChild());
+  else
+    {
+      if(node->getRightChild()->isNil()) {
+	node->setRightChild(new Node<T>(value));
+	return node->getRightChild();
+      }
+      else
+	{
+	  return insert(value, node->getRightChild());
+	}
   }
 }
 
@@ -185,7 +195,7 @@ void RBTree<T>::preOrderPrint()
 template<typename T>
 void RBTree<T>::preOrderPrint(Node<T> *node)
 {
-  // cout << node->getValue() << " " << node->getColor() << endl;
+   cout << node->getValue() << " " << node->getColor() << endl;
   if (!node->getLeftChild()->isNil())
     {
       preOrderPrint(node->getLeftChild());

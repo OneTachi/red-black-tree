@@ -56,6 +56,6 @@ int main(int argc, char** argv)
       cout << "OH" << endl;
     }
   **/
-  //  tree.preOrderPrint();
+  tree.preOrderPrint();
   //inStream.close();
 }
