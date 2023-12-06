@@ -54,6 +54,9 @@ int main(int argc, char** argv)
 	    case 'i':
 	      if (wordVec.size() == 2)
 		tree.insert(wordVec[1]);
+	      break;
+	    case 'p':
+	      tree.preOrderPrint(root);
 	    }
 	}
  
