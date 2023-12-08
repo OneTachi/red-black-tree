@@ -27,7 +27,6 @@ int main(int argc, char** argv)
 
   while (inStream >> word)
     {
-      cout << word << endl;
       tree.insert(word);
     }
   inStream.close();

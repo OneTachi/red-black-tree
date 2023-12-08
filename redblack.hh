@@ -15,6 +15,9 @@
 
 using namespace std;
 
+const bool RED = true;
+const bool BLACK = false;
+
 template<typename T>
 class RBTree{
 public:
@@ -102,20 +105,18 @@ Node<T>* RBTree<T>::getUncle(Node<T>* nibling) {
 //TODO: finish fixColor, write delete and print
 template<typename T>
 void RBTree<T>::fixColor(Node<T> *node) {
-  cout << "ack" << endl;
     if(node == root){
-        node->setColor(false);
+        node->setColor(BLACK);
         return;
     } else if(!node->getParent()->getColor()){
         return;
     }
-    cout << "ack" << endl;
     Node<T> *uncle = getUncle(node);
     Node<T> *currParent = node->getParent();
     if(uncle->getColor()){
-        uncle->setColor(false);
-        currParent->setColor(false);
-        currParent->getParent()->setColor(true);
+        uncle->setColor(BLACK);
+        currParent->setColor(BLACK);
+        currParent->getParent()->setColor(RED);
         fixColor(currParent->getParent());
     } else {
         //if uncle is on the right
@@ -126,8 +127,8 @@ void RBTree<T>::fixColor(Node<T> *node) {
                 fixColor(currParent);
             //line case
             } else {
-                currParent->setColor(false);
-                currParent->getParent()->setColor(true);
+                currParent->setColor(BLACK);
+                currParent->getParent()->setColor(RED);
                 rotateRight(currParent->getParent());
             }
         //uncle on left
@@ -138,8 +139,8 @@ void RBTree<T>::fixColor(Node<T> *node) {
                 fixColor(currParent);
 
             } else {
-                currParent->setColor(false);
-                currParent->getParent()->setColor(true);
+                currParent->setColor(BLACK);
+                currParent->getParent()->setColor(RED);
                 rotateLeft(currParent->getParent());
             }
         }
@@ -150,7 +151,7 @@ template<typename T>
 void RBTree<T>::insert(const T &value){
     if(root == NULL) {
       root = new Node<T>(value);
-      root->setColor(false);
+      root->setColor(BLACK);
     }
     else {
       fixColor(insert(value, root));
@@ -159,19 +160,23 @@ void RBTree<T>::insert(const T &value){
 }
 
 template<typename T>
-Node<T>* RBTree<T>::insert(const T &value, Node<T> *node){
+Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
+  
   if(value < node->getValue())
     {
       if(node->getLeftChild()->isNil()) {
 	node->setLeftChild(new Node<T>(value));
-	cout << "ack" << endl;
 	return node->getLeftChild();
       }
       else
 	{
-	  cout << "ack" << endl;
 	  return insert(value, node->getLeftChild());
 	}
+    }
+  else if (value == node->getValue())
+    {
+      node->incrementDegree();
+      return node;
     }
   else
     {

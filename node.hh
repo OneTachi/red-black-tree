@@ -15,9 +15,9 @@ class Node
 public:
   // Constructors -- All assume Node will be Red. All Pointers will be assigned to NUlL unless specified
   Node(){this->nil = true;};
-  Node(Node<T> *mom){ nil = true;  parent = mom; cout << parent << endl;}
+  Node(Node<T> *mom){ nil = true;  parent = mom;}
   Node(const T &value){ this->value = value; rightChild = new Node<T>(this); leftChild = new Node<T>(this);}
-  Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { cout << "BC" << endl; rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
+  Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { ; rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
   Node(Node *parent, T value) { parent = parent; value = value; rightChild = new Node<T>(this); leftChild = new Node<T>(this);}
 
   // Returns corresponding pointer to node
@@ -33,6 +33,9 @@ public:
   void setRightChild(Node *child) { rightChild = child; child->setParent(this); };
   void setParent(Node *node) { parent = node; };
 
+  void incrementDegree() { degree++; }
+  void decrementDegree() { degree--; }
+
   bool getColor() { return red; }
   void setColor(bool is_red) { red = is_red; };
 
@@ -47,5 +50,6 @@ private:
   Node *parent;
   Node *leftChild;
   Node *rightChild;
+  int degree = 1;
 };
 #endif
