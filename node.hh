@@ -26,12 +26,16 @@ public:
   Node *getLeftChild() { return leftChild; } ;
   Node *getRightChild() { return rightChild; };
   Node *getParent() {  return parent; };
+  
   T getValue(){return value;}
+  void setValue(T val) { value = val; }
 
   // Set corresponding pointers
   void setLeftChild(Node *child) { leftChild = child; child->setParent(this); };
   void setRightChild(Node *child) { rightChild = child; child->setParent(this); };
   void setParent(Node *node) { parent = node; };
+
+  bool has_no_children(); 
 
   void incrementDegree() { degree++; }
   void decrementDegree() { degree--; }
@@ -53,4 +57,15 @@ private:
   Node *rightChild;
   int degree = 1;
 };
+
+bool Node<T>::has_no_children()
+{
+  if (isNil())
+    {
+      cout << "Nil node has no children. Exiting program." << endl;
+      exit(0);
+    }
+  return getLeftChild()->isNil() && getRightChild->isNil();
+}
+
 #endif

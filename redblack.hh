@@ -41,6 +41,7 @@ public:
   
   //void remove(T value);
   //void remove(T value, Node<T> node);
+  void remove(T value);
   void remove(Node<T> *);
 
 
@@ -66,6 +67,10 @@ private:
   Node<T> *find(T);
   Node<T> *find(Node<T>*, T);
   Node<T> *root;
+
+  void swap_nodes(Node<T> *, Node<T> *);
+  void isolate_branch(Node<T> *);
+  void cut_branch(Node<T> *);
 
   string color_to_string(bool);
 
@@ -306,7 +311,7 @@ void RBTree<T>::inOrderPrint(Node<T> *node)
 template<typename T>
 void RBTree<T>::transplant(Node<T> *removed, Node<T> *successor)
 {
-  if (removed->getParent() == NULL)
+  if (removed == root)
     {
       root = successor;
     }
@@ -322,33 +327,102 @@ void RBTree<T>::transplant(Node<T> *removed, Node<T> *successor)
 }
 
 template<typename T>
-void RBTree<T>::remove(Node<T> *removal)
+void RBTree<T>::remove(T key)
 {
-  // Insert case of removal node not existing
-  if (!(removal->getLeftChild()->isNil() || removal->getRightChild()->isNil()))
-    {
-      Node<T> *minimum = findMin(removal);
-      Node<T> *minRight = minimum->getRightChild();
-      transplant(minimum, minRight);
+  Node<T> *del = find(key);
+  if (del == NULL) { return; }
 
-      Node<T> *nextBig = removal->getRightChild();
-      minimum->setRightChild(nextBig);
-      nextBig->setParent(minimum);
+  Node<T> *leftChild = del->getLeftChild();
+  Node<T> *rightChild = del->getRightChild();
+  
+  // If removed node is root with no children, delete it. Update root
+  if (del == root && size == 1) 
+    {
+      cut_branch(del);
+      root = NULL;
+      return;
+    }
+  // If removed node has no children and red, delete it. Put Nil Node back
+  if (del->has_no_children() && del->getColor() == RED)
+    {
+      burn_branch(del);
+      return;
+    }
+  // If removed node has no children and is black, we have to do more to conserve red-black tree properties.
+  if (del->has_no_children() && del->getColor() == BLACK)
+    {
+      
+    }
+  // If removed node has 2 children
+  if (!(leftChild->isNil() || rightChild->isNil()))
+    {
+      Node<T> *successor = findMin(del->getRightChild());
+      swap_nodes(successor, del);
+      remove(successor->getValue()); // Will only run once! It can at most have one child being the minimum
+      return;
+    }
+  // Single child case. Must be a black with a red child. So swap nodes and then delete
+  else if (!leftChild->isNil())
+    {
+      swap_nodes(del, leftChild);
+      burn_branch(leftChild);
+      return;
+    }
+  else if (!rightChild->isNil())
+    {
+      swap_nodes(del, rightChild);
+      burn_branch(rightChild);
+      return;
+    }
+  
 
-      transplant(removal, minimum);
-      //delete fixup(minRight) if Black I THINK ALL
-    }
-  else if (removal->getLeftChild()->isNil()) // Right Child exists OR if both children are Nil
-    {
-      transplant(removal, removal->getRightChild());
-      //delete fixup
-    }
-  else 
-    {
-      transplant(removal, removal->getLeftChild());
-      //delete fixup
-    }
-  delete removal;
+  
+}
+
+/**
+ * Utility function to combine two steps.
+ */
+template<typename T>
+void RBTree<T>::burn_branch(Node<T> *burning_point)
+{
+  isolate_branch(burning_point);
+  cut_branch(burning_point);
+}
+
+/**
+ * Swaps the location of two nodes within the tree
+ */
+template<typename T>
+void RBTree<T>::swap_nodes(Node<T> *n, Node<T> *m)
+{
+  T temp = n->getValue();
+  n->setValue(m->getValue());
+  m->setValue(temp);
+}
+
+/**
+ * Snaps connection between parent node and child node
+ */
+template<typename T>
+void RBTree<T>::isolate_branch(Node<T> *cut)
+{
+  Node<T> *stem = cut->getParent();
+  if (stem->getRightChild() == cut) { stem->setRightChild(new Node<T>(stem)); }
+  else if (stem->getLeftChild() == cut) { stem->setLeftChild(new Node<T>(stem)); }
+}
+
+
+/**
+ * Deletes an entire subtree/subtree including the root of the subtree/tree.
+ * DOES subtract size
+ */
+template<typename T>
+void RBTree<T>::cut_branch(Node<T> *node)
+{
+  if (node->getLeftChild() != NULL) { cut_branch(node->getLeftChild()); }
+  if (node->getRightChild() != NULL) { cut_branch(node->getRightChild()); }
+  if (!node->isNil()) { size--; } // If its an actual node, subtract from size.
+  delete node;
 }
 
 template<typename T>
