@@ -1,2 +1,2 @@
-TEXT tests/3Line.txt
+TEXT tests/GenRed
 POSTORDER

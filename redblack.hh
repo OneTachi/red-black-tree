@@ -121,45 +121,67 @@ Node<T>* RBTree<T>::getUncle(Node<T>* nibling) {
 //TODO: finish fixColor, write delete and print
 template<typename T>
 void RBTree<T>::fixColor(Node<T> *node) {
-    if(node == root){
-        node->setColor(BLACK);
-        return;
-    } else if(!node->getParent()->getColor()){
-        return;
-    }
-    Node<T> *uncle = getUncle(node);
-    Node<T> *currParent = node->getParent();
-    if(uncle->getColor()){
-        uncle->setColor(BLACK);
-        currParent->setColor(BLACK);
-        currParent->getParent()->setColor(RED);
-        fixColor(currParent->getParent());
-    } else {
-        //if uncle is on the right
-        if(uncle == currParent->getParent()->getRightChild()){
+  // Note: Inserting first node into root case is already covered in insert(T).
+  
+  Node<T> *current = node; // This will be the node we track.
+  while (current->getColor() == RED) //We will continue our loop till current is black.
+    {
+      
+      Node<T> *uncle = getUncle(current);
+      Node<T> *parent = current->getParent();
+      Node<T> *grandparent = parent->getParent();
+      
+      // If parent's color is black, stop loop, we are done.
+      if (parent->getColor() == BLACK) { return; }
+
+      // If the parent's and uncle's color are red, change them to black and grandparent to red. GP might have a red parent, violating no red to red
+      else if (parent->getColor() == RED && uncle->getColor() == RED)
+	{
+	  parent->setColor(BLACK);
+	  uncle->setColor(BLACK);
+	  grandparent->setColor(RED);
+	  current = grandparent; // Do not exit while loop. We must check if GP is fine to be red.
+	}
+
+      // If the parent is red and root, change parent to black and stop. (Test 4 on Wikipedia)
+      else if (parent->getColor() == RED && parent == root)
+	{
+	  parent->setColor(BLACK);
+	  return;
+	}
+
+      // The grandparent uncle parent line/triangle rotations
+      else if (parent->getColor() == RED && uncle->getColor() == BLACK)
+	{
+	  if(uncle == grandparent->getRightChild()) {
             //triangle case
-            if(node == currParent->getRightChild()){
-                rotateLeft(currParent);
-                fixColor(currParent);
+            if(node == parent->getRightChild()){
+	      rotateLeft(parent);
+	      current = parent;
             //line case
             } else {
-                currParent->setColor(BLACK);
-                currParent->getParent()->setColor(RED);
-                rotateRight(currParent->getParent());
+	      parent->setColor(BLACK);
+	      grandparent->setColor(RED);
+	      rotateRight(grandparent);
             }
-        //uncle on left
-        } else {
+	    //uncle on left
+	  } else {
             //triangle
-            if(node == currParent->getLeftChild()){
-                rotateRight(currParent);
-                fixColor(currParent);
+            if(current == parent->getLeftChild()){
+	      rotateRight(parent);
+	      fixColor(parent);
 
             } else {
-                currParent->setColor(BLACK);
-                currParent->getParent()->setColor(RED);
-                rotateLeft(currParent->getParent());
+	      parent->setColor(BLACK);
+	      grandparent->setColor(RED);
+	      rotateLeft(grandparent);
             }
-        }
+	  }
+	}
+
+      
+      // Can't have the loop run again, segfault for uncle/parent/grandparent. Also this covers when GP --> Current and is root (red). Test 3 on Wikipedia
+      if (current == root) { return; }
     }
 }
 
@@ -167,7 +189,7 @@ template<typename T>
 void RBTree<T>::insert(const T &value){
     if(root == NULL) {
       root = new Node<T>(value);
-      root->setColor(BLACK);
+      root->setColor(BLACK); // Set Root to black immediately (this is just one case covered.)
     }
     else {
       fixColor(insert(value, root));

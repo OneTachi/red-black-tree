@@ -65,6 +65,7 @@ int main(int argc, char** argv)
     if (s_command == "TEXT")
       {
 	clean_and_insert_all_words(s_arg, tree);
+	cout << "Size: " << tree->getSize() << endl;
       }
 
 
