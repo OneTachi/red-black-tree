@@ -1,0 +1,2 @@
+TEXT tests/3Line.txt
+POSTORDER

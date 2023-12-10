@@ -12,6 +12,7 @@
 #include <fstream>
 #include <vector>
 #include <stddef.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -23,8 +24,8 @@ class RBTree{
 public:
   //Constructors
   RBTree(){root = NULL;}
-  RBTree(T value){this->root = Node<T>(value);}
-  RBTree(Node<T>* node){this->root = node;}
+  RBTree(T value){this->root = Node<T>(value); size = 1; }
+  RBTree(Node<T>* node){this->root = node; size = 1; }
 
   //Functions
   Node<T> *getRoot(){ return root;}
@@ -45,15 +46,30 @@ public:
 
   // void find(T value);
   void preOrderPrint();
+  void postOrderPrint();
+  void inOrderPrint();
+  
   Node<T>* findMin(Node<T>*);
   void deleteFixup(Node<T>*, Node<T>*);
   void transplant(Node<T>*, Node<T>*);
+
+  int getSize() { return size; }
   
   
 
 private:
+  // Functions that I want to be hidden away
   void preOrderPrint(Node<T> *);
+  void postOrderPrint(Node<T> *);
+  void inOrderPrint(Node<T> *);
+
+  Node<T> *find(T);
+  Node<T> *find(Node<T>*, T);
   Node<T> *root;
+
+  string color_to_string(bool);
+
+  int size = 0;
 
 };
 
@@ -156,6 +172,7 @@ void RBTree<T>::insert(const T &value){
     else {
       fixColor(insert(value, root));
     }
+    size++;
   
 }
 
@@ -193,14 +210,15 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
 
 template<typename T>
 void RBTree<T>::preOrderPrint()
-{ 
+{
+  if (root == NULL) { cout << "Root NULL, stopping print" << endl; exit(0); }
   preOrderPrint(root);
 }
 
 template<typename T>
 void RBTree<T>::preOrderPrint(Node<T> *node)
 {
-   cout << node->getValue() << " " << node->getColor() << endl;
+  cout << node->getValue() << " " << color_to_string(node->getColor()) << " " << node->getDegree() << endl;
   if (!node->getLeftChild()->isNil())
     {
       preOrderPrint(node->getLeftChild());
@@ -210,6 +228,51 @@ void RBTree<T>::preOrderPrint(Node<T> *node)
       preOrderPrint(node->getRightChild());
     }
 }
+
+template<typename T>
+void RBTree<T>::postOrderPrint()
+{
+  if (root == NULL) { cout << "Root NULL, stopping print" << endl; exit(0); }
+  postOrderPrint(root);
+}
+
+template<typename T>
+void RBTree<T>::postOrderPrint(Node<T> *node)
+{
+  if (!node->getLeftChild()->isNil())
+    {
+      postOrderPrint(node->getLeftChild());
+    }
+  if (!node->getRightChild()->isNil())
+    {
+      postOrderPrint(node->getRightChild());
+    }
+  cout << node->getValue() << " " << color_to_string(node->getColor()) << " " << node->getDegree() << endl;
+}
+
+template<typename T>
+void RBTree<T>::inOrderPrint()
+{
+  if (root == NULL) { cout << "Root NULL, stopping print" << endl; exit(0); }
+  inOrderPrint(root);
+}
+
+template<typename T>
+void RBTree<T>::inOrderPrint(Node<T> *node)
+{
+   
+  if (!node->getLeftChild()->isNil())
+    {
+      inOrderPrint(node->getLeftChild());
+    }
+  cout << node->getValue() << " " << color_to_string(node->getColor()) << " " << node->getDegree() << endl;
+  if (!node->getRightChild()->isNil())
+    {
+      inOrderPrint(node->getRightChild());
+    }
+}
+
+
 
 template<typename T>
 void RBTree<T>::transplant(Node<T> *removed, Node<T> *successor)
@@ -305,6 +368,40 @@ Node<T>* RBTree<T>::findMin(Node<T> *node)
 {
   if (node->getLeftChild->isNil()) { return node; }
   return findMin(node->getLeftChild());
+}
+
+/**
+ * Will attempt to find a node given a key.
+ * If it does not find a node, it will print that out BUT continue the program passing NULL as return.
+ */
+template<typename T>
+Node<T>* RBTree<T>::find(T key)
+{
+  if (root == NULL) { cout << "Root is null, canceling find and program." << endl; exit(0); }
+
+  Node<T>* lock = find(root, key);
+  if (lock == NULL) { cout << "Could not find Node" << endl; return lock; } // Will continue program.
+}
+
+/**
+ * This is the recursive function that will find a node based on a key
+ */
+template<typename T>
+Node<T>* RBTree<T>::find(Node<T> *node, T key)
+{
+  if (node->isNil()) { return NULL; } // Key not found
+  
+  T lock = node->getValue();
+  if (lock == key) { return node; } // Found node, return.
+  else if (key > lock) { return find(node->getRightChild(), key); } // Use BST property, check right.
+  else { return find(node->getLeftChild(), key); } // Must be smaller if not two other cases, 
+}
+
+template<typename T>
+string RBTree<T>::color_to_string(bool color)
+{
+  if (color == RED) { return "RED"; }
+  return "BLACK";
 }
 
 #endif //REDBLACK_HH

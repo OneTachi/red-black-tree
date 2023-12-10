@@ -25,7 +25,7 @@ public:
   
   Node *getLeftChild() { return leftChild; } ;
   Node *getRightChild() { return rightChild; };
-  Node *getParent() { cout<< parent << endl; return parent; };
+  Node *getParent() {  return parent; };
   T getValue(){return value;}
 
   // Set corresponding pointers
@@ -35,6 +35,7 @@ public:
 
   void incrementDegree() { degree++; }
   void decrementDegree() { degree--; }
+  int getDegree() { return degree; }
 
   bool getColor() { return red; }
   void setColor(bool is_red) { red = is_red; };
