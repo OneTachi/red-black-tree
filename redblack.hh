@@ -124,12 +124,17 @@ void RBTree<T>::fixColor(Node<T> *node) {
   // Note: Inserting first node into root case is already covered in insert(T).
   
   Node<T> *current = node; // This will be the node we track.
+
   while (current->getColor() == RED) //We will continue our loop till current is black.
     {
-      
-      Node<T> *uncle = getUncle(current);
       Node<T> *parent = current->getParent();
+      if(parent == root){
+          return;
+      }
+      Node<T> *uncle = getUncle(current);
       Node<T> *grandparent = parent->getParent();
+
+      //cout << "fix color loop" << endl;
       
       // If parent's color is black, stop loop, we are done.
       if (parent->getColor() == BLACK) { return; }
@@ -155,26 +160,28 @@ void RBTree<T>::fixColor(Node<T> *node) {
 	{
 	  if(uncle == grandparent->getRightChild()) {
             //triangle case
-            if(node == parent->getRightChild()){
-	      rotateLeft(parent);
-	      current = parent;
+            if(current == parent->getRightChild()){
+	             rotateLeft(parent);
+	             current = parent;
             //line case
             } else {
-	      parent->setColor(BLACK);
-	      grandparent->setColor(RED);
-	      rotateRight(grandparent);
+	             parent->setColor(BLACK);
+	            grandparent->setColor(RED);
+	             rotateRight(grandparent);
+                return;
             }
 	    //uncle on left
 	  } else {
             //triangle
             if(current == parent->getLeftChild()){
-	      rotateRight(parent);
-	      fixColor(parent);
-
+	            rotateRight(parent);
+                current = parent;
+          //line
             } else {
-	      parent->setColor(BLACK);
-	      grandparent->setColor(RED);
-	      rotateLeft(grandparent);
+	             parent->setColor(BLACK);
+	            grandparent->setColor(RED);
+	            rotateLeft(grandparent);
+                return;
             }
 	  }
 	}
