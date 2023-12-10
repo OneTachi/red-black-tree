@@ -68,6 +68,7 @@ private:
   Node<T> *find(Node<T>*, T);
   Node<T> *root;
 
+  void burn_branch(Node<T> *);
   void swap_nodes(Node<T> *, Node<T> *);
   void isolate_branch(Node<T> *);
   void cut_branch(Node<T> *);

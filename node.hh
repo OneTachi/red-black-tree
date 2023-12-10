@@ -58,6 +58,7 @@ private:
   int degree = 1;
 };
 
+template<typename T>
 bool Node<T>::has_no_children()
 {
   if (isNil())
