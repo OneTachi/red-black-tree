@@ -14,8 +14,8 @@ class Node
 {
 public:
   // Constructors -- All assume Node will be Red. All Pointers will be assigned to NUlL unless specified
-  Node(){this->nil = true;};
-  Node(Node<T> *mom){ nil = true;  parent = mom;}
+  Node(){this->nil = true; this->red = false;};
+  Node(Node<T> *mom){ nil = true;  parent = mom; red = false;}
   Node(const T &value){ this->value = value; rightChild = new Node<T>(this); leftChild = new Node<T>(this);}
   Node(Node *parent, Node *leftChild, Node *rightChild, T value = NULL) { ; rightChild = rightChild; leftChild = leftChild; parent = parent; value = value; }
   Node(Node *parent, T value) { parent = parent; value = value; rightChild = new Node<T>(this); leftChild = new Node<T>(this);}

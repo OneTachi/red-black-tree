@@ -82,10 +82,17 @@ private:
 template<typename T>
 void RBTree<T>::rotateLeft(Node<T> *node) {
     Node<T> *rightChild = node->getRightChild();
+    Node<T> *parent = node->getParent();
     if(!rightChild->isNil()) {
         node->setParent(rightChild);
         rightChild->setParent(NULL);
-
+        if(node == root){
+            root = rightChild;
+        }
+        if(parent != NULL){
+            parent->setRightChild(rightChild);
+        }
+        //cout << "root:" << root->getValue() << endl;
         Node<T> *temp = rightChild->getLeftChild();
         rightChild->setLeftChild(node);
         temp->setParent(node);
@@ -97,10 +104,18 @@ template<typename T>
 void RBTree<T>::rotateRight(Node<T> *node ) {
     //check if left exists
     Node<T> *leftChild = node->getLeftChild();
+    Node<T> *parent = node->getParent();
     if(!leftChild->isNil()) {
         //leftChild parent = node parent
         node->setParent(leftChild);
         leftChild->setParent(NULL);
+        if(node == root){
+            root = leftChild;
+        }
+        if(parent != NULL){
+            parent->setLeftChild(leftChild);
+        }
+        //cout << "root:" << root->getValue() << endl;
         //node parent = leftchild
         //leftchild rightchild is = to parent left
         Node<T> *temp = leftChild->getRightChild();
@@ -134,67 +149,73 @@ void RBTree<T>::fixColor(Node<T> *node) {
   while (current->getColor() == RED) //We will continue our loop till current is black.
     {
       Node<T> *parent = current->getParent();
-      if(parent == root){
-          return;
+      Node<T> *grandparent = NULL;
+      Node<T> *uncle = NULL;
+      if(parent != root){
+          grandparent = parent->getParent();
+          uncle = getUncle(current);
       }
-      Node<T> *uncle = getUncle(current);
-      Node<T> *grandparent = parent->getParent();
+      //cout << "root:" << root->getValue() << endl;
 
-      //cout << "fix color loop" << endl;
-      
       // If parent's color is black, stop loop, we are done.
       if (parent->getColor() == BLACK) { return; }
+
+      else if (parent->getColor() == RED && parent == root)
+      {
+          parent->setColor(BLACK);
+          return;
+      }
 
       // If the parent's and uncle's color are red, change them to black and grandparent to red. GP might have a red parent, violating no red to red
       else if (parent->getColor() == RED && uncle->getColor() == RED)
 	{
+        //cout << "root:" << root->getValue() << endl;
+        //cout << "uncle:" << uncle->getValue() << endl;
 	  parent->setColor(BLACK);
 	  uncle->setColor(BLACK);
 	  grandparent->setColor(RED);
 	  current = grandparent; // Do not exit while loop. We must check if GP is fine to be red.
 	}
-
-      // If the parent is red and root, change parent to black and stop. (Test 4 on Wikipedia)
-      else if (parent->getColor() == RED && parent == root)
-	{
-	  parent->setColor(BLACK);
-	  return;
-	}
-
       // The grandparent uncle parent line/triangle rotations
-      else if (parent->getColor() == RED && uncle->getColor() == BLACK)
-	{
-	  if(uncle == grandparent->getRightChild()) {
-            //triangle case
-            if(current == parent->getRightChild()){
-	             rotateLeft(parent);
-	             current = parent;
-            //line case
-            } else {
-	             parent->setColor(BLACK);
-	            grandparent->setColor(RED);
-	             rotateRight(grandparent);
-                return;
-            }
-	    //uncle on left
-	  } else {
-            //triangle
-            if(current == parent->getLeftChild()){
-	            rotateRight(parent);
-                current = parent;
-          //line
-            } else {
-	             parent->setColor(BLACK);
-	            grandparent->setColor(RED);
-	            rotateLeft(grandparent);
-                return;
-            }
-	  }
-	}
+      else if (parent->getColor() == RED && uncle->getColor() == BLACK) {
+          if (uncle == grandparent->getRightChild()) {
+              //triangle case
+              if (current == parent->getRightChild()) {
+                  rotateLeft(parent);
+                  current = parent;
+                  //line case
+              } else {
+                  parent->setColor(BLACK);
+                  grandparent->setColor(RED);
+                  rotateRight(grandparent);
+                  return;
+              }
+              //uncle on left
+          } else {
+              //triangle
+              if (current == parent->getLeftChild()) {
+                  rotateRight(parent);
+                  current = parent;
+                  //line
+              } else {
+                  parent->setColor(BLACK);
+                  grandparent->setColor(RED);
+                  //cout << "root:" << root->getValue() << endl;
+                  rotateLeft(grandparent);
+                  //cout << "root:" << root->getValue() << endl;
+                  return;
+              }
+          }
+      }
 
-      
+
+
       // Can't have the loop run again, segfault for uncle/parent/grandparent. Also this covers when GP --> Current and is root (red). Test 3 on Wikipedia
-      if (current == root) { return; }
+      if (current == root) {
+          cout << current->getRightChild()->getLeftChild()->getValue() << endl;
+          return;
+      }
+
     }
 }
 
@@ -267,6 +288,7 @@ void RBTree<T>::preOrderPrint(Node<T> *node)
 template<typename T>
 void RBTree<T>::postOrderPrint()
 {
+    cout << "root:" << root->getValue() << endl;
   if (root == NULL) { cout << "Root NULL, stopping print" << endl; exit(0); }
   postOrderPrint(root);
 }
