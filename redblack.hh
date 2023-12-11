@@ -49,10 +49,6 @@ public:
   void preOrderPrint();
   void postOrderPrint();
   void inOrderPrint();
-  
-  Node<T>* findMin(Node<T>*);
-  void deleteFixup(Node<T>*, Node<T>*);
-  void transplant(Node<T>*, Node<T>*);
 
   int getSize() { return size; }
   
@@ -68,10 +64,15 @@ private:
   Node<T> *find(Node<T>*, T);
   Node<T> *root;
 
+  Node<T>* findMin(Node<T>*);
+  void transplant(Node<T>*, Node<T>*);
+
   void burn_branch(Node<T> *);
   void swap_nodes(Node<T> *, Node<T> *);
   void isolate_branch(Node<T> *);
   void cut_branch(Node<T> *);
+  
+  void complex_remove(Node<T>*);
 
   string color_to_string(bool);
 
@@ -124,6 +125,7 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
         node->setLeftChild(temp);
     }
 }
+
 
 template<typename T>
 Node<T>* RBTree<T>::getUncle(Node<T>* nibling) {
@@ -374,7 +376,7 @@ void RBTree<T>::remove(T key)
   // If removed node has no children and is black, we have to do more to conserve red-black tree properties.
   if (del->has_no_children() && del->getColor() == BLACK)
     {
-      
+      complex_remove(del);
     }
   // If removed node has 2 children
   if (!(leftChild->isNil() || rightChild->isNil()))
@@ -396,10 +398,7 @@ void RBTree<T>::remove(T key)
       swap_nodes(del, rightChild);
       burn_branch(rightChild);
       return;
-    }
-  
-
-  
+    }  
 }
 
 /**
@@ -449,43 +448,31 @@ void RBTree<T>::cut_branch(Node<T> *node)
 }
 
 template<typename T>
-void RBTree<T>::deleteFixup(Node<T> *fix, Node<T> *sibling)
+void RBTree<T>::complex_remove(Node<T> *node)
 {
-  while (fix->getColor() == false && fix != root)
+  // Wrap in some while loop
+  Node<T> *current = node;
+  Node<T> *parent = current->getParent();
+  bool dir = parent->direction(current);
+  Node<T> *sibling = parent->child_in_direction(!dir);
+  Node<T> *close_nephew = sibling->child_in_direction(dir);
+  Node<T> *distant_nephew = sibling->child_in_direction(!dir);
+
+  // Deletion complete case.
+  if (current == root)
     {
-      if (sibling->getColor == true)
-	{
-	  sibling->setColor(false); // set sibling black
-	  fix->getParent()->setColor(true); // set parent red
-	  //rotate parent left
-	  sibling = fix->getParent()->getRight();
-	}
-
-      if (sibling->getLeftChild()->getColor() == false && sibling->getRightChild()->getColor() == false)
-	{
-	  sibling->setColor(true);
-	  fix = fix->getParent();
-	}
-
-      if (sibling->getLeftChild()->getColor() == true && sibling->getRightChild()->getColor() == false && sibling->getColor() == false) //Sibling & sibling right are black while left is red
-	{
-	  sibling->getLeftChild()->setColor(false);
-	  sibling->setColor(true);
-	  //right rotation on sibling
-	  sibling = fix->getParent()->getRight();
-	}
-
-      if (sibling->getColor() == false && sibling->getRightChild()->getColor() == true)
-	{
-	  bool newColor = fix->getParent()->getColor();
-	  sibling->setColor(newColor);
-	  fix->getParent()->setColor(false);
-	  sibling->getRightChild()->setColor(false);
-	  //left rotation on fix parent
-	  fix = root;
-	}
-      fix->setColor(false);
+      return;
     }
+  // If sibling and sibling children are colored black
+  else if (parent->getColor() == BLACK && sibling->getColor() == BLACK && close_nephew->getColor() == BLACK && distant_nephew->getColor() == BLACK)
+    {
+      sibling->setColor(RED);
+      current = parent;
+    }
+  //
+  //  else if (sibling->getColor() == RED )
+
+  
 }
 
 

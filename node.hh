@@ -9,6 +9,9 @@
 
 using namespace std;
 
+const bool RIGHT = true;
+const bool LEFT = false;
+
 template<typename T>
 class Node
 {
@@ -26,6 +29,10 @@ public:
   Node *getLeftChild() { return leftChild; } ;
   Node *getRightChild() { return rightChild; };
   Node *getParent() {  return parent; };
+  
+  Node *child_in_direction(bool);
+  bool direction(Node<T> *);
+  
   
   T getValue(){return value;}
   void setValue(T val) { value = val; }
@@ -68,5 +75,22 @@ bool Node<T>::has_no_children()
     }
   return getLeftChild()->isNil() && getRightChild->isNil();
 }
+
+template<typename T>
+bool Node<T>::direction(Node<T> *child)
+{
+  if (getLeftChild() == child){ return LEFT; }
+  else if (getRightChild() == child) { return RIGHT; }
+  else { cout << "Node is not a child. Exiting program." << endl; exit(1); }
+}
+
+template<typename T>
+Node<T>* Node<T>::child_in_direction(bool dir)
+{
+  if (dir == LEFT){ return getLeftChild(); }
+  else { return getRightChild(); }
+}
+
+
 
 #endif
