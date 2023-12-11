@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     if (s_command == "TEXT")
       {
 	clean_and_insert_all_words(s_arg, tree);
-	cout << "Size: " << tree->getSize() << endl;
+	cout << "Size (unique words): " << tree->getSize() << endl;
       }
 
 
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
     else if (s_command == "INSERT")
       {
 	tree->insert(s_arg);
-	cout << "New Size: " << tree->getSize() << endl;
+	cout << "New Size (unique words): " << tree->getSize() << endl;
       }
 
     // remove word from tree
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
     else if (s_command == "REMOVE")
       {
 	tree->remove(s_arg);
-	cout << "New Size: " << tree->getSize() << endl;
+	cout << "New Size (unique words): " << tree->getSize() << endl;
       }
 
     else if (s_command == "DEBUG")

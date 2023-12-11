@@ -1,2 +1,4 @@
 TEXT tests/asv.txt
 FIND genesis
+REMOVE genesis
+FIND the
