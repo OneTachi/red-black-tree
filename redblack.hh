@@ -86,12 +86,15 @@ void RBTree<T>::rotateLeft(Node<T> *node) {
     Node<T> *parent = node->getParent();
     if(!rightChild->isNil()) {
         node->setParent(rightChild);
-        rightChild->setParent(NULL);
+        rightChild->setParent(parent);
         if(node == root){
             root = rightChild;
         }
         if(parent != NULL){
-            parent->setRightChild(rightChild);
+            if(parent->direction(node) == RIGHT)
+                parent->setRightChild(rightChild);
+            else
+                parent->setLeftChild(rightChild);
         }
         //cout << "root:" << root->getValue() << endl;
         Node<T> *temp = rightChild->getLeftChild();
@@ -109,12 +112,15 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
     if(!leftChild->isNil()) {
         //leftChild parent = node parent
         node->setParent(leftChild);
-        leftChild->setParent(NULL);
+        leftChild->setParent(parent);
         if(node == root){
             root = leftChild;
         }
         if(parent != NULL){
-            parent->setLeftChild(leftChild);
+            if(parent->direction(node) == RIGHT)
+                parent->setRightChild(leftChild);
+            else
+                parent->setLeftChild(leftChild);
         }
         //cout << "root:" << root->getValue() << endl;
         //node parent = leftchild
@@ -214,10 +220,9 @@ void RBTree<T>::fixColor(Node<T> *node) {
 
       // Can't have the loop run again, segfault for uncle/parent/grandparent. Also this covers when GP --> Current and is root (red). Test 3 on Wikipedia
       if (current == root) {
-          cout << current->getRightChild()->getLeftChild()->getValue() << endl;
           return;
       }
-
+        //cout << current->getRightChild()->getLeftChild()->getValue() << endl;
     }
 }
 
