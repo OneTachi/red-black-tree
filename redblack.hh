@@ -490,28 +490,64 @@ void RBTree<T>::cut_branch(Node<T> *node)
 template<typename T>
 void RBTree<T>::complex_remove(Node<T> *node)
 {
-  // Wrap in some while loop
   Node<T> *current = node;
-  Node<T> *parent = current->getParent();
-  bool dir = parent->direction(current);
-  Node<T> *sibling = parent->child_in_direction(!dir);
-  Node<T> *close_nephew = sibling->child_in_direction(dir);
-  Node<T> *distant_nephew = sibling->child_in_direction(!dir);
+  // If the current is root, none of the the below nodes will work (they will be NULL, which should be impossible.)
+  while (current != root) 
+    {
+      Node<T> *parent = current->getParent();
+      bool dir = parent->direction(current);
+      Node<T> *sibling = parent->child_in_direction(!dir);
+      Node<T> *close_nephew = sibling->child_in_direction(dir);
+      Node<T> *distant_nephew = sibling->child_in_direction(!dir);
 
-  // Deletion complete case.
-  if (current == root)
-    {
-      return;
-    }
-  // If sibling and sibling children are colored black
-  else if (parent->getColor() == BLACK && sibling->getColor() == BLACK && close_nephew->getColor() == BLACK && distant_nephew->getColor() == BLACK)
-    {
-      sibling->setColor(RED);
-      current = parent;
-    }
+      // If sibling and sibling children are colored black
+      if (parent->getColor() == BLACK && sibling->getColor() == BLACK && close_nephew->getColor() == BLACK && distant_nephew->getColor() == BLACK)
+	{
+	  sibling->setColor(RED);
+	  current = parent;
+	}
   
-  //
-  //  else if (sibling->getColor() == RED )
+      //
+      else if (sibling->getColor() == RED)
+	{
+	  rotateDirection(dir, parent);
+	  parent->setColor(RED);
+	  sibling->setColor(BLACK);
+	  sibling = close_nephew;
+	  distant_nephew = sibling->child_in_direction(!dir);
+	}
+
+      // If the parent is red while the sibling and its children are black, then we'll set sibling and parent to the opposite color. 
+      else if (parent->getColor() == RED && sibling->getColor() == BLACK && close_nephew->getColor() == BLACK && distant_nephew->getColor() == BLACK)
+	{
+	  sibling->setColor(RED);
+	  parent->setColor(BLACK);
+	  return; // We add a black node to the path, thus making up for any loss. So return.
+	}
+
+      // If the sibling and distant nephew are black while close nephew is red, we'll be making a rotation
+      else if (sibling->getColor() == BLACK && close_nephew->getColor() == RED && distant_nephew->getColor() == BLACK)
+	{
+	  rotateDirection(!dir, sibling);
+	  // Sibling should not be the root even in rotation.
+	  if (sibling == root) { cout << "Sibling rotated to root in complex removal. Exiting" << endl; exit(1); }
+	  
+	  sibling->setColor(RED);
+	  close_nephew->setColor(BLACK);
+       
+	  // I think below is unneccary, as it will be updated regardless in next loop.
+	  distant_nephew = sibling; 
+	  sibling = close_nephew;
+	}
+      // If the distant nephew is red and sibling is black. We will rotate and the result will look like trio of black nodes or red parent with two black nodes as children
+      else if (distant_nephew->getColor() == RED && sibling->getColor() == BLACK)
+	{
+	  rotateDirection(dir, parent);
+	  sibling->setColor(parent->getColor());
+	  parent->setColor(BLACK);
+	  distant_nephew->setColor(BLACK); // This node will be pulled up, so we are changing its color
+	}
+    }
 
   
 }

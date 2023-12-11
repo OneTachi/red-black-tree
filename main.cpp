@@ -4,7 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <stddef.h>
-#include "Timer.h"
+//#include "Timer.h"
 
 #include "redblack.hh"
 
@@ -43,8 +43,8 @@ int main(int argc, char** argv)
   
   string line, s_command, s_arg;
 
-  Timer timer;
-  timer.start();
+  //Timer timer;
+  //  timer.start();
   
   while (getline(commandStream, line)) {
 
@@ -98,9 +98,9 @@ int main(int argc, char** argv)
       exit(1);
     }
   }
-  timer.stop();
+  //timer.stop();
     // print the elapsed time in millisec
-    cout << timer.getElapsedTimeInMilliSec() << " ms.\n";
+  //   cout << timer.getElapsedTimeInMilliSec() << " ms.\n";
   commandStream.close();
 
   return 1;

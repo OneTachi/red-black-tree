@@ -1,4 +1,4 @@
-TEXT tests/RemChills
+TEXT tests/words
 PREORDER
 REMOVE c
 PREORDER
