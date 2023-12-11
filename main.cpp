@@ -83,7 +83,11 @@ int main(int argc, char** argv)
 	tree->debug = true;
 	cout << "Debug Mode On" << endl;
       }
-   
+
+    else if (s_command == "FIND")
+      {
+	tree->findSize(s_arg);
+      }
 
     else if (s_command == "PREORDER")
       {

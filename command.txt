@@ -1,3 +1,2 @@
-DEBUG
 TEXT tests/asv.txt
-PREORDER
+FIND genesis

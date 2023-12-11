@@ -36,6 +36,7 @@ public:
   void rotateDirection(bool, Node<T>*);
   
   void fixColor(Node<T> *node);
+  void findSize(T);
   
   void insert(const T &value);
   Node<T> *insert(const T &value, Node<T> *node);
@@ -147,7 +148,7 @@ template<typename T>
 void RBTree<T>::rotateDirection(bool dir, Node<T> *node)
 {
   if (dir == RIGHT) { rotateRight(node); }
-  else { rotateLeft(node); cout << "ye" << node->getValue() << endl;}
+  else { rotateLeft(node);}
 }
 
 
@@ -218,7 +219,6 @@ void RBTree<T>::fixColor(Node<T> *node) {
 	  {
 	    if (debug) { cout << "triangle case" << endl; }
 	    rotateDirection(dir, parent);
-	    if (dir == RIGHT) {cout << "Right" << endl; }
 	    current = parent;
 	    parent = grandparent->get_child_in_direction(dir);
 	  }
@@ -292,7 +292,10 @@ void RBTree<T>::insert(const T &value){
 	{
 	  fixColor(fix); 
 	}
-      size--;
+      else
+	{
+	  size--;
+	}
     }
     size++;
   
@@ -655,6 +658,16 @@ string RBTree<T>::color_to_string(bool color)
 {
   if (color == RED) { return "RED"; }
   return "BLACK";
+}
+
+template<typename T>
+void RBTree<T>::findSize(T key)
+{
+  Node<T> *node = find(key);
+  if (node == NULL) { cout << "Node nonexistent, exiting" << endl; exit(1); }
+
+  
+  cout << "The amount of times this word appears is: " << node->getDegree() << endl;
 }
 
 #endif //REDBLACK_HH
