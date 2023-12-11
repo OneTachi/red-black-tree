@@ -86,24 +86,28 @@ template<typename T>
 void RBTree<T>::rotateLeft(Node<T> *node) {
     Node<T> *rightChild = node->getRightChild();
     Node<T> *parent = node->getParent();
-    if(!rightChild->isNil()) {
-        node->setParent(rightChild);
-        rightChild->setParent(parent);
-        if(node == root){
-            root = rightChild;
-        }
-        if(parent != NULL){
-            if(parent->direction_toward(node) == RIGHT)
-                parent->setRightChild(rightChild);
-            else
-                parent->setLeftChild(rightChild);
-        }
-        //cout << "root:" << root->getValue() << endl;
-        Node<T> *temp = rightChild->getLeftChild();
-        rightChild->setLeftChild(node);
-        temp->setParent(node);
-        node->setRightChild(temp);
+    if(rightChild->isNil()) { cout << "right child is nil node in rotate left, exiting"; return; exit(1); }
+    
+    if(node == root){
+      root = rightChild;
     }
+    
+    if(parent != NULL){
+      if(parent->direction_toward(node) == RIGHT)
+	parent->setRightChild(rightChild);
+      else
+	parent->setLeftChild(rightChild);
+    }
+    else if (parent == NULL)
+      {
+	rightChild->setParent(NULL);
+      }
+    //cout << "root:" << root->getValue() << endl;
+    Node<T> *temp = rightChild->getLeftChild();
+    rightChild->setLeftChild(node);
+    //  temp->setParent(node);
+    node->setRightChild(temp);
+    
 }
 
 template<typename T>
@@ -111,36 +115,39 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
     //check if left exists
     Node<T> *leftChild = node->getLeftChild();
     Node<T> *parent = node->getParent();
-    if(!leftChild->isNil()) {
-        //leftChild parent = node parent
-        node->setParent(leftChild);
-        leftChild->setParent(parent);
-        if(node == root){
-            root = leftChild;
-        }
-        //cout << "currnode: " << node->getValue() << endl;
-        //cout << "parentval: " << (parent == NULL) << endl;
-        if(parent != NULL){
-            if(parent->direction_toward(node) == RIGHT)
-                parent->setRightChild(leftChild);
-            else
-                parent->setLeftChild(leftChild);
-        }
-        //cout << "root:" << root->getValue() << endl;
-        //node parent = leftchild
-        //leftchild rightchild is = to parent left
-        Node<T> *temp = leftChild->getRightChild();
-        leftChild->setRightChild(node);
-        temp->setParent(node);
-        node->setLeftChild(temp);
+    if(leftChild->isNil()) { cout << "left child is nil node in rotate right, exiting"; return; exit(1); }
+    //leftChild parent = node parent
+    // node->setParent(leftChild);
+    //  leftChild->setParent(parent);
+    
+    if(node == root){
+      root = leftChild;
     }
+    
+    if(parent != NULL){
+      if(parent->direction_toward(node) == RIGHT)
+	parent->setRightChild(leftChild);
+      else
+	parent->setLeftChild(leftChild);
+    }
+    else if (parent == NULL)
+      {
+	leftChild->setParent(NULL);
+      }
+    
+    //leftchild rightchild is = to parent left
+    Node<T> *temp = leftChild->getRightChild();
+    leftChild->setRightChild(node);
+    //temp->setParent(node);
+    node->setLeftChild(temp);
+    
 }
 
 template<typename T>
 void RBTree<T>::rotateDirection(bool dir, Node<T> *node)
 {
   if (dir == RIGHT) { rotateRight(node); }
-  else { rotateLeft(node); }
+  else { rotateLeft(node); cout << "ye" << node->getValue() << endl;}
 }
 
 
@@ -211,6 +218,7 @@ void RBTree<T>::fixColor(Node<T> *node) {
 	  {
 	    if (debug) { cout << "triangle case" << endl; }
 	    rotateDirection(dir, parent);
+	    if (dir == RIGHT) {cout << "Right" << endl; }
 	    current = parent;
 	    parent = grandparent->get_child_in_direction(dir);
 	  }
@@ -275,10 +283,16 @@ void RBTree<T>::insert(const T &value){
     if(root == NULL) {
       root = new Node<T>(value);
       root->setColor(BLACK); // Set Root to black immediately (this is just one case covered.)
-      if (debug) { cout << "inserted root" << endl; }
+      if (debug) { cout << "inserted root: " << value << endl; }
+      if (value == "asv") { cout << "Hi" << endl;}
     }
     else {
-      fixColor(insert(value, root));
+      Node<T> *fix = insert(value, root);
+      if (fix != NULL)
+	{
+	  fixColor(fix); 
+	}
+      size--;
     }
     size++;
   
@@ -300,12 +314,14 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
 	  return insert(value, node->getLeftChild());
 	}
     }
+  
   else if (value == node->getValue())
     {
       node->incrementDegree();
       if (debug) { cout << "incremented degree of: " << value << endl; }
-      return node;
+      return NULL;
     }
+  
   else
     {
       if(node->getRightChild()->isNil()) {
