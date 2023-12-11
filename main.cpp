@@ -12,6 +12,11 @@ using namespace std;
 void clean_and_insert_all_words(string, RBTree<string>*);
 void cleanup_string(string &);
 
+
+/**
+ * I have used code from the hashing project. The only things modified was calling the function from the tree and what I'm outputting as a result.
+ * Also I've added functions like in order print that did not exist in the hashing project. Furthermore, cleanup string and insert all 
+*/
 int main(int argc, char** argv)
 {
   if (argc < 2)
@@ -22,22 +27,6 @@ int main(int argc, char** argv)
 
 
   RBTree<string> *tree = new RBTree<string>();
-
-  /**
-  // cout << "HELLO" << endl;
-  ifstream inStream;
-  inStream.open(argv[1]);
-  string word;
-
-  while (inStream >> word)
-    {
-      tree.insert(word);
-    }
-  inStream.close();
-
-
-  tree.preOrderPrint();
-  */
 
 
   ifstream commandStream;
@@ -74,17 +63,16 @@ int main(int argc, char** argv)
     else if (s_command == "INSERT")
       {
 	tree->insert(s_arg);
-	cout << tree->getSize() << endl;
+	cout << "New Size: " << tree->getSize() << endl;
       }
 
     // remove word from tree
 
-    /*
     else if (s_command == "REMOVE") {
-      HT->remove(s_arg);
-      cout << HT->num_entries << " " << HT->table_size << endl;
+      tree->remove(s_arg);
+      cout << "New Size: " << tree->getSize() << endl;
     }
-    */
+   
 
     else if (s_command == "PREORDER")
       {
@@ -136,7 +124,7 @@ void cleanup_string(string & s)
 }
 
 /**
- * Created by Professor from Hashing Project. Modified to fit Red Black Tree
+ * Created by Professor from Hashing Project. Modified line 151 to insert into the tree and not call nonexistent hashing. Everything else is the same
  */
 void clean_and_insert_all_words(string filename, RBTree<string> *tree)
 {

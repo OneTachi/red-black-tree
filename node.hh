@@ -73,7 +73,7 @@ bool Node<T>::has_no_children()
       cout << "Nil node has no children. Exiting program." << endl;
       exit(0);
     }
-  return getLeftChild()->isNil() && getRightChild->isNil();
+  return getLeftChild()->isNil() && getRightChild()->isNil();
 }
 
 template<typename T>

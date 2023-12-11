@@ -1,2 +1,4 @@
-TEXT tests/GenRed
-POSTORDER
+TEXT tests/RemChills
+PREORDER
+REMOVE c
+PREORDER

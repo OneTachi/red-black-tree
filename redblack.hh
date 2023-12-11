@@ -33,6 +33,7 @@ public:
   
   void rotateLeft(Node<T>*);
   void rotateRight(Node<T>*);
+  void rotateDirection(bool, Node<T>*);
   
   void fixColor(Node<T> *node);
   
@@ -42,7 +43,6 @@ public:
   //void remove(T value);
   //void remove(T value, Node<T> node);
   void remove(T value);
-  void remove(Node<T> *);
 
 
   // void find(T value);
@@ -63,6 +63,7 @@ private:
   Node<T> *find(T);
   Node<T> *find(Node<T>*, T);
   Node<T> *root;
+  void remove(Node<T> *);
 
   Node<T>* findMin(Node<T>*);
   void transplant(Node<T>*, Node<T>*);
@@ -124,6 +125,13 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
         temp->setParent(node);
         node->setLeftChild(temp);
     }
+}
+
+template<typename T>
+void RBTree<T>::rotateDirection(bool dir, Node<T> *node)
+{
+  if (dir == RIGHT) { rotateRight(node); }
+  else { rotateLeft(node); }
 }
 
 
@@ -383,7 +391,7 @@ void RBTree<T>::remove(T key)
     {
       Node<T> *successor = findMin(del->getRightChild());
       swap_nodes(successor, del);
-      remove(successor->getValue()); // Will only run once! It can at most have one child being the minimum
+      remove(successor); 
       return;
     }
   // Single child case. Must be a black with a red child. So swap nodes and then delete
@@ -400,6 +408,29 @@ void RBTree<T>::remove(T key)
       return;
     }  
 }
+
+template<typename T>
+void RBTree<T>::remove(Node<T> *del)
+{
+  Node<T> *leftChild = del->getLeftChild();
+  Node<T> *rightChild = del->getRightChild();
+  if (del->has_no_children()) { burn_branch(del); }
+    // Single child case. Must be a black with a red child. So swap nodes and then delete
+  else if (!leftChild->isNil())
+    {
+      swap_nodes(del, leftChild);
+      burn_branch(leftChild);
+      return;
+    }
+  else if (!rightChild->isNil())
+    {
+      swap_nodes(del, rightChild);
+      burn_branch(rightChild);
+      return;
+    }  
+  
+}
+
 
 /**
  * Utility function to combine two steps.
@@ -469,6 +500,7 @@ void RBTree<T>::complex_remove(Node<T> *node)
       sibling->setColor(RED);
       current = parent;
     }
+  
   //
   //  else if (sibling->getColor() == RED )
 
@@ -479,7 +511,7 @@ void RBTree<T>::complex_remove(Node<T> *node)
 template<typename T>
 Node<T>* RBTree<T>::findMin(Node<T> *node)
 {
-  if (node->getLeftChild->isNil()) { return node; }
+  if (node->getLeftChild()->isNil()) { return node; }
   return findMin(node->getLeftChild());
 }
 
@@ -493,7 +525,8 @@ Node<T>* RBTree<T>::find(T key)
   if (root == NULL) { cout << "Root is null, canceling find and program." << endl; exit(0); }
 
   Node<T>* lock = find(root, key);
-  if (lock == NULL) { cout << "Could not find Node" << endl; return lock; } // Will continue program.
+  if (lock == NULL) { cout << "Could not find Node: " << key << endl; return lock; } // Will continue program.
+  return lock;
 }
 
 /**
