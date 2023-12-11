@@ -117,6 +117,8 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
         if(node == root){
             root = leftChild;
         }
+        //cout << "currnode: " << node->getValue() << endl;
+        //cout << "parentval: " << (parent == NULL) << endl;
         if(parent != NULL){
             if(parent->direction(node) == RIGHT)
                 parent->setRightChild(leftChild);
@@ -253,6 +255,7 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
   if(value < node->getValue())
     {
       if(node->getLeftChild()->isNil()) {
+          delete node->getLeftChild();
 	node->setLeftChild(new Node<T>(value));
 	return node->getLeftChild();
       }
@@ -269,6 +272,7 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
   else
     {
       if(node->getRightChild()->isNil()) {
+          delete node->getRightChild();
 	node->setRightChild(new Node<T>(value));
 	return node->getRightChild();
       }
