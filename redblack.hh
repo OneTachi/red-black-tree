@@ -51,7 +51,8 @@ public:
   void inOrderPrint();
 
   int getSize() { return size; }
-  
+
+  bool debug = false;
   
 
 private:
@@ -92,7 +93,7 @@ void RBTree<T>::rotateLeft(Node<T> *node) {
             root = rightChild;
         }
         if(parent != NULL){
-            if(parent->direction(node) == RIGHT)
+            if(parent->direction_toward(node) == RIGHT)
                 parent->setRightChild(rightChild);
             else
                 parent->setLeftChild(rightChild);
@@ -120,7 +121,7 @@ void RBTree<T>::rotateRight(Node<T> *node ) {
         //cout << "currnode: " << node->getValue() << endl;
         //cout << "parentval: " << (parent == NULL) << endl;
         if(parent != NULL){
-            if(parent->direction(node) == RIGHT)
+            if(parent->direction_toward(node) == RIGHT)
                 parent->setRightChild(leftChild);
             else
                 parent->setLeftChild(leftChild);
@@ -176,36 +177,68 @@ void RBTree<T>::fixColor(Node<T> *node) {
       //cout << "root:" << root->getValue() << endl;
 
       // If parent's color is black, stop loop, we are done.
-      if (parent->getColor() == BLACK) { return; }
+      if (parent->getColor() == BLACK)
+	{
+	  if (debug) { cout << "parent is black node" << endl; }
+	  return;
+	}
 
       else if (parent->getColor() == RED && parent == root)
       {
           parent->setColor(BLACK);
+	  if (debug) { cout << "parent is red node and root" << endl; }
           return;
       }
 
       // If the parent's and uncle's color are red, change them to black and grandparent to red. GP might have a red parent, violating no red to red
       else if (parent->getColor() == RED && uncle->getColor() == RED)
 	{
-        //cout << "root:" << root->getValue() << endl;
-        //cout << "uncle:" << uncle->getValue() << endl;
 	  parent->setColor(BLACK);
 	  uncle->setColor(BLACK);
 	  grandparent->setColor(RED);
 	  current = grandparent; // Do not exit while loop. We must check if GP is fine to be red.
+	  if (debug) { cout << "parent and uncle is red" << endl; }
 	}
+      
       // The grandparent uncle parent line/triangle rotations
       else if (parent->getColor() == RED && uncle->getColor() == BLACK) {
+
+	// Getting direction of grandparent to parent
+	bool dir = grandparent->direction_toward(parent);
+
+	// So current node is the inner grandchild. In other words, this is the triangle case.
+	if (dir != parent->direction_toward(current))
+	  {
+	    if (debug) { cout << "triangle case" << endl; }
+	    rotateDirection(dir, parent);
+	    current = parent;
+	    parent = grandparent->get_child_in_direction(dir);
+	  }
+
+	// Current node is the outer grandchild. In other words, this is the line case. This is an IF STATEMENT, not if else, because we go from triangle case to line case.
+	if (dir == parent->direction_toward(current))
+	  {
+	    if (debug) { cout << "line case" << endl; }
+	    rotateDirection(!dir, grandparent); // Note: Grandparent may be the root at start of rotation.
+	    parent->setColor(BLACK);
+	    grandparent->setColor(RED);
+	    return; // Stop here.
+	  }
+
+	  
+	/** This is way too hard to debug. I am rewriting all this
           if (uncle == grandparent->getRightChild()) {
               //triangle case
               if (current == parent->getRightChild()) {
                   rotateLeft(parent);
                   current = parent;
+		  if (debug) { cout << "triangle first" << endl; }
                   //line case
               } else {
                   parent->setColor(BLACK);
                   grandparent->setColor(RED);
                   rotateRight(grandparent);
+		  if (debug) { cout << "line first" << endl; }
                   return;
               }
               //uncle on left
@@ -214,6 +247,7 @@ void RBTree<T>::fixColor(Node<T> *node) {
               if (current == parent->getLeftChild()) {
                   rotateRight(parent);
                   current = parent;
+		  if (debug) { cout << "triangle second" << endl; }
                   //line
               } else {
                   parent->setColor(BLACK);
@@ -221,18 +255,18 @@ void RBTree<T>::fixColor(Node<T> *node) {
                   //cout << "root:" << root->getValue() << endl;
                   rotateLeft(grandparent);
                   //cout << "root:" << root->getValue() << endl;
+		  if (debug) { cout << "line second" << endl; }
                   return;
               }
-          }
+	*/
       }
-
-
 
       // Can't have the loop run again, segfault for uncle/parent/grandparent. Also this covers when GP --> Current and is root (red). Test 3 on Wikipedia
-      if (current == root) {
-          return;
-      }
-        //cout << current->getRightChild()->getLeftChild()->getValue() << endl;
+      if (current == root)
+	{
+	  if (debug) { cout << "current is root so exiting loop" << endl; }
+	  return;
+	}
     }
 }
 
@@ -241,6 +275,7 @@ void RBTree<T>::insert(const T &value){
     if(root == NULL) {
       root = new Node<T>(value);
       root->setColor(BLACK); // Set Root to black immediately (this is just one case covered.)
+      if (debug) { cout << "inserted root" << endl; }
     }
     else {
       fixColor(insert(value, root));
@@ -255,8 +290,9 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
   if(value < node->getValue())
     {
       if(node->getLeftChild()->isNil()) {
-          delete node->getLeftChild();
+	delete node->getLeftChild();
 	node->setLeftChild(new Node<T>(value));
+	if (debug) { cout << "inserted into left of: " << node->getValue() << " value: " << value << endl; }
 	return node->getLeftChild();
       }
       else
@@ -267,13 +303,15 @@ Node<T>* RBTree<T>::insert(const T &value, Node<T> *node) {
   else if (value == node->getValue())
     {
       node->incrementDegree();
+      if (debug) { cout << "incremented degree of: " << value << endl; }
       return node;
     }
   else
     {
       if(node->getRightChild()->isNil()) {
-          delete node->getRightChild();
+	delete node->getRightChild();
 	node->setRightChild(new Node<T>(value));
+	if (debug) { cout << "inserted into right of: " << node->getValue() << " value: " << value << endl; }
 	return node->getRightChild();
       }
       else
@@ -458,8 +496,13 @@ template<typename T>
 void RBTree<T>::swap_nodes(Node<T> *n, Node<T> *m)
 {
   T temp = n->getValue();
+  int temp_degree = n->getDegree();
+  
   n->setValue(m->getValue());
+  n->setDegree(m->getDegree());
+  
   m->setValue(temp);
+  m->setDegree(temp_degree);
 }
 
 /**
@@ -487,6 +530,9 @@ void RBTree<T>::cut_branch(Node<T> *node)
   delete node;
 }
 
+/**
+ * Handles removing a black node with no children. There will be 1 less black node in a path, so we have to account for that and reorganize the colors of the tree
+ */
 template<typename T>
 void RBTree<T>::complex_remove(Node<T> *node)
 {
@@ -495,10 +541,10 @@ void RBTree<T>::complex_remove(Node<T> *node)
   while (current != root) 
     {
       Node<T> *parent = current->getParent();
-      bool dir = parent->direction(current);
-      Node<T> *sibling = parent->child_in_direction(!dir);
-      Node<T> *close_nephew = sibling->child_in_direction(dir);
-      Node<T> *distant_nephew = sibling->child_in_direction(!dir);
+      bool dir = parent->direction_toward(current);
+      Node<T> *sibling = parent->get_child_in_direction(!dir);
+      Node<T> *close_nephew = sibling->get_child_in_direction(dir);
+      Node<T> *distant_nephew = sibling->get_child_in_direction(!dir);
 
       // If sibling and sibling children are colored black
       if (parent->getColor() == BLACK && sibling->getColor() == BLACK && close_nephew->getColor() == BLACK && distant_nephew->getColor() == BLACK)
@@ -514,7 +560,7 @@ void RBTree<T>::complex_remove(Node<T> *node)
 	  parent->setColor(RED);
 	  sibling->setColor(BLACK);
 	  sibling = close_nephew;
-	  distant_nephew = sibling->child_in_direction(!dir);
+	  distant_nephew = sibling->get_child_in_direction(!dir);
 	}
 
       // If the parent is red while the sibling and its children are black, then we'll set sibling and parent to the opposite color. 

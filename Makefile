@@ -2,8 +2,8 @@ BINARIES=RBtree
 
 all:	${BINARIES}
 
-RBtree: main.cpp Timer.o
-	g++ -std=c++11 -g main.cpp Timer.o -o RBtree
+RBtree: main.cpp
+	g++ -std=c++11 -g main.cpp -o RBtree
 
 Timer.o: Timer.cpp
 	g++ -std=c++11 -g Timer.cpp -o Timer.o

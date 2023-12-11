@@ -1,4 +1,3 @@
-TEXT tests/words
-PREORDER
-REMOVE c
+DEBUG
+TEXT tests/asv.txt
 PREORDER

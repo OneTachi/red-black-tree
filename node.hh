@@ -30,8 +30,8 @@ public:
   Node *getRightChild() { return rightChild; };
   Node *getParent() {  return parent; };
   
-  Node *child_in_direction(bool);
-  bool direction(Node<T> *);
+  Node *get_child_in_direction(bool);
+  bool direction_toward(Node<T> *);
   
   
   T getValue(){return value;}
@@ -47,6 +47,7 @@ public:
   void incrementDegree() { degree++; }
   void decrementDegree() { degree--; }
   int getDegree() { return degree; }
+  void setDegree(int deg) { degree = deg; }
 
   bool getColor() { return red; }
   void setColor(bool is_red) { red = is_red; };
@@ -77,7 +78,7 @@ bool Node<T>::has_no_children()
 }
 
 template<typename T>
-bool Node<T>::direction(Node<T> *child)
+bool Node<T>::direction_toward(Node<T> *child)
 {
   if (getLeftChild() == child){ return LEFT; }
   else if (getRightChild() == child) { return RIGHT; }
@@ -85,7 +86,7 @@ bool Node<T>::direction(Node<T> *child)
 }
 
 template<typename T>
-Node<T>* Node<T>::child_in_direction(bool dir)
+Node<T>* Node<T>::get_child_in_direction(bool dir)
 {
   if (dir == LEFT){ return getLeftChild(); }
   else { return getRightChild(); }

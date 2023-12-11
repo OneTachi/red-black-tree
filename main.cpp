@@ -72,10 +72,17 @@ int main(int argc, char** argv)
 
     // remove word from tree
 
-    else if (s_command == "REMOVE") {
-      tree->remove(s_arg);
-      cout << "New Size: " << tree->getSize() << endl;
-    }
+    else if (s_command == "REMOVE")
+      {
+	tree->remove(s_arg);
+	cout << "New Size: " << tree->getSize() << endl;
+      }
+
+    else if (s_command == "DEBUG")
+      {
+	tree->debug = true;
+	cout << "Debug Mode On" << endl;
+      }
    
 
     else if (s_command == "PREORDER")
