@@ -569,7 +569,7 @@ void RBTree<T>::complex_remove(Node<T> *node)
       // If the sibling and distant nephew are black while close nephew is red, we'll be making a rotation
       else if (sibling->getColor() == BLACK && close_nephew->getColor() == RED && distant_nephew->getColor() == BLACK)
 	{
-	  if (debug) { cout << "sibling and all nephews colored black" << endl; }
+	  if (debug) { cout << "sibling and distant colored black while close colored red" << endl; }
 	  rotateDirection(!dir, sibling);
 	  // Sibling should not be the root even in rotation.
 	  if (sibling == root) { cout << "Sibling rotated to root in complex removal. Exiting" << endl; exit(1); }

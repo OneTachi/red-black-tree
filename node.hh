@@ -54,7 +54,7 @@ public:
 
   // Check if Node is Nil
   bool isNil(){return nil;}
-  void become_nil() { nil = true; delete getLeftChild(); delete getRightChild(); } // Technically, it still has its data. Also, Assumes it has a Nil left and right child.
+  void become_nil() { nil = true; red = false; delete getLeftChild(); delete getRightChild(); } // Technically, it still has its data. Also, Assumes it has a Nil left and right child.
   
 private:
   bool red = true;

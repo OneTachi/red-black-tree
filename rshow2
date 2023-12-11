@@ -1,0 +1,4 @@
+TEXT tests/complexRem2
+PREORDER
+REMOVE alpha
+PREORDER
