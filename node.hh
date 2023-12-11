@@ -50,11 +50,11 @@ public:
   void setDegree(int deg) { degree = deg; }
 
   bool getColor() { return red; }
-  void setColor(bool is_red) { red = is_red; };
+  void setColor(bool is_red) { red = is_red; }
 
   // Check if Node is Nil
-  bool isNil(){return nil;};
-  
+  bool isNil(){return nil;}
+  void become_nil() { nil = true; delete getLeftChild(); delete getRightChild(); } // Technically, it still has its data. Also, Assumes it has a Nil left and right child.
   
 private:
   bool red = true;
